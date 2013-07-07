@@ -27,6 +27,7 @@ var cheerio = require('cheerio');
 var rest = require('restler');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
+var HTMLURL_DEFAULT = "http://guarded-caverns-3042.herokuapp.com/";
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
@@ -40,7 +41,7 @@ var assertFileExists = function(infile) {
 var assertUrlOk = function(uri) {
     var instr = uri.toString();
     return instr;
-}
+};
 
 var htmlFile = function(htmlfile) {
     return fs.readFileSync(htmlfile);
@@ -61,14 +62,18 @@ var checkHtmlFile = function(htmlfile, checksfile) {
     return out;
 };
 
+var clone = function(fn) {
+    return fn.bind();
+}
+
 if(require.main == module) {
     program
-	.option('-c, --checks ', 'Path to checks.json', assertFileExists, CHECKSFILE_DEFAULT)
-	.option('-f, --file ', 'Path to index.html', assertFileExists, HTMLFILE_DEFAULT)
-	.option('-u, --url', 'Url of file', assertUrlOk, 'http://www.onet.pl')
+	.option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
+	.option('-f, --file <file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+	.option('-u, --url <url>', 'Url of file', clone(assertUrlOk), HTMLURL_DEFAULT)
 	.parse(process.argv);
     if (program.url) {
-	rest.get(program.url).on('complete', function(result, response) {
+        rest.get(program.url).on('complete', function(result, response) {
 		if (result instanceof Error) {
 			console.error('Error: ' + util.format(response.message));
 		} else {
