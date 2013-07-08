@@ -68,16 +68,16 @@ var clone = function(fn) {
 
 if(require.main == module) {
     program
-	.option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
-	.option('-f, --file <file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-	.option('-u, --url <url>', 'Url of file', clone(assertUrlOk), HTMLURL_DEFAULT)
+	.option('-c, --checks', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
+	.option('-f, --file', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+	.option('-u, --url', 'Url of file', clone(assertUrlOk), HTMLURL_DEFAULT)
 	.parse(process.argv);
     if (program.url) {
         rest.get(program.url).on('complete', function(result, response) {
 		if (result instanceof Error) {
 			console.error('Error: ' + util.format(response.message));
 		} else {
-			var checkJson = checkHtmlFile(result, program.checks);
+            var checkJson = checkHtmlFile(result, program.checks);
 			var outJson = JSON.stringify(checkJson, null, 4);
 		        console.log(outJson);
 		}
